@@ -62,14 +62,13 @@ const changeGame = async (req, res) => {
         return res.status(404).json({error: 'No such game'})
     }
 
-    const name = req.body.name
+    const name = req.body.name 
     const players = req.body.players
     const time = req.body.time
     const publisher = req.body.publisher ? req.body.publisher : ""
     const designer = req.body.designer ? req.body.designer : ""
 
     const updatedGame = await Game.findOneAndUpdate({_id: req.params.id}, {name, players, time, publisher, designer}, {new: true})
-
     res.status(200).json(updatedGame)
 
 }
