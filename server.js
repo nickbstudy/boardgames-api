@@ -8,6 +8,7 @@ const { errorHandler } = require('./middleware/errorMiddleware')
 const mongoose = require('mongoose')
 const connectDB = require('./config/db')
 const gameRoutes = require('./routes/games')
+const userRoutes = require('./routes/users')
 
 const app = express()
 
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: false }))
 
 // routes
 app.use('/api/games', gameRoutes)
+app.use('/api/users', userRoutes)
 
 app.use(errorHandler)
 
