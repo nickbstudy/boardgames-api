@@ -1,6 +1,11 @@
 const mongoose = require('mongoose')
 
 const gameSchema = mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    },
     name: {
         type: String,
         required: [true, 'Please enter the name']
@@ -11,7 +16,7 @@ const gameSchema = mongoose.Schema({
     },
     time: {
         type: String,
-        required: [true, 'Please enter the average playtime']
+        required: [true, 'Please enter the average playtime (number or range formatted as 30-60)']
     },
     publisher: {
         type: String,

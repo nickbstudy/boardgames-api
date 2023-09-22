@@ -5,7 +5,12 @@ const Game = require('../models/Game')
 // @access  Public
 const getGames = async (req, res) => {
 
-    const games = await Game.find()
+    if(!req.user) {
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    const games = await Game.find({user: req.user.id})
     res.status(200).json(games)
 
 }
@@ -20,6 +25,11 @@ const addGame = async (req, res) => {
     const time = req.body.time
     const publisher = req.body.publisher ? req.body.publisher : ""
     const designer = req.body.designer ? req.body.designer : ""
+
+    if(!req.user) {
+        res.status(401)
+        throw new Error('User not found')
+    }
 
     try {
 
@@ -43,9 +53,8 @@ const addGame = async (req, res) => {
         //         res.status(200).json(createdGame)
         //     }
         // }
-        const createdGame = await Game.create({name, players, time, publisher, designer})
+        const createdGame = await Game.create({name, players, time, publisher, designer, user: req.user.id})
         res.status(200).json(createdGame)
-        
     } catch (error) {
         res.status(400).json({error: error.message})
     }
@@ -60,6 +69,18 @@ const changeGame = async (req, res) => {
 
     if (!oldGame) {
         return res.status(404).json({error: 'No such game'})
+    }
+
+    // Check for user
+    if(!req.user) {
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // Check user is editing their own herbs only
+    if(oldGame.user.toString() !== req.user.id) {
+        res.status(401)
+        throw new Error('User not authorized')
     }
 
     const name = req.body.name 
@@ -82,6 +103,17 @@ const deleteGame = async (req, res) => {
 
     if (!game) {
         return res.status(404).json({error: 'No such game'})
+    }
+
+    if (!req.user) {
+        res.status(401);
+        throw new Error("User not found");
+    }
+
+    // check user is only deleting their own games
+    if (game.user.toString() !== req.user.id) {
+        res.status(401);
+        throw new Error("User not authorized");
     }
 
     await Game.deleteOne({_id: req.params.id})
